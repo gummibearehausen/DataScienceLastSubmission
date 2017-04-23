@@ -1,4 +1,4 @@
-# Use python 3.5
+# Use python 2.7
 # conda install -c auto cbor=0.1.4
 
 from __future__ import print_function

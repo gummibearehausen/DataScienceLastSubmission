@@ -3,13 +3,15 @@
 INDEX_DIR = "BaseIndexFolder"
 # INDEX_DIR = "IndexFiles.index"
 import sys, os, lucene
-
+import codecs
+import re
 from java.nio.file import Paths
 from org.apache.lucene.analysis.standard import StandardAnalyzer
 from org.apache.lucene.index import DirectoryReader
 from org.apache.lucene.queryparser.classic import QueryParser
 from org.apache.lucene.store import SimpleFSDirectory
 from org.apache.lucene.search import IndexSearcher
+
 
 """
 This script is loosely based on the Lucene (java implementation) demo class
@@ -39,12 +41,57 @@ def run(searcher, analyzer):
             # print ('id:', doc.get("paraId"), 'Contents', doc.get("contents"))
             print ('id:', doc.get("paraId"))
 
-def SearchEngine():
+
+def run1(searcher, analyzer, queries, hits_per_query, output_file):
+    #queries = [ [query_text],[query_id]]
+    queries_text = queries[0]
+    queries_ids = queries[1]
+
+    if len(queries_text)!= len(queries_ids):
+        print("Query errors")
+        exit()
+    for i in range(len(queries_text)):
+        query_as_text = queries_text[i]
+
+        query_as_id = queries_ids[i]
+        query = QueryParser("contents", analyzer).parse(query_as_text)
+        scoreDocs = searcher.search(query, hits_per_query).scoreDocs
+        print ("%s total matching documents." % len(scoreDocs))
+
+        rank=1
+        for scoreDoc in scoreDocs:
+            doc = searcher.doc(scoreDoc.doc)
+            # print ('id:', doc.get("paraId"), 'Contents', doc.get("contents"))
+            print ('id:', doc.get("paraId"))
+            search_result_query = ' '.join([query_as_id,str(0),
+                                            doc.get("paraId"),
+                                            str(rank),
+                                            str(1.0/rank),
+                                            "BBT"])
+            # print(search_result_query)
+            output_file.write(search_result_query+"\n")
+            rank += 1
+
+
+def search_engine_1(queries, hits):
+    run_file = codecs.open("runfile", "w", "utf-8")
     # lucene.initVM(vmargs=['-Djava.awt.headless=true'])
     print ('lucene', lucene.VERSION)
     base_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
     directory = SimpleFSDirectory(Paths.get(os.path.join(base_dir, INDEX_DIR)))
     searcher = IndexSearcher(DirectoryReader.open(directory))
     analyzer = StandardAnalyzer()
-    run(searcher, analyzer)
+    run1(searcher, analyzer, queries, hits, run_file)
+    del searcher
+    run_file.close()
+
+
+def search_engine_general():
+    # lucene.initVM(vmargs=['-Djava.awt.headless=true'])
+    print ('lucene', lucene.VERSION)
+    base_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
+    directory = SimpleFSDirectory(Paths.get(os.path.join(base_dir, INDEX_DIR)))
+    searcher = IndexSearcher(DirectoryReader.open(directory))
+    analyzer = StandardAnalyzer()
+    run1(searcher, analyzer)
     del searcher
