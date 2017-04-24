@@ -20,6 +20,8 @@ paras are indexed in the folder 'BaseIndexFolder'
 
 
 result:
+MAP is for top 1000 search result
+
 
 Model 1:
 MAP: 0.283191417191
