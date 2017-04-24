@@ -35,6 +35,7 @@ Usage: ```python System_interface.py <paragraphs> <outline> <qrel> 3 ```
 This method first performs named entity recognition on the query, and appends the named entities to the query. This means the query will have double mentions of named entities thus forcing more weight onto those terms.  
 Usage: ```python System_interface.py <paragraphs> <outline> <qrel> 4 ```  
 ## 5. Pseudorelevence Feedback
+Extract the first and the second semantic arguments from the top k pseudo search result, then use those arguments as query expansion. The idea is to explore the theme of the highly -ranked documents
 
 Usage: ```python System_interface.py <paragraphs> <outline> <qrel> 5 <k> ```  
 ## 6. Word2Vec Query Expansion
@@ -78,4 +79,8 @@ P@5: 0.133397683398
 p@r: 0.20202368757
 MMR: 0.364631059843
 
-
+model 4
+MAP: 0.276497298248
+P@5: 0.131370656371
+p@r: 0.197332226628
+MMR: 0.357580977659
