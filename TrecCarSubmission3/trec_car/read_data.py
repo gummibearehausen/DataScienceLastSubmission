@@ -56,8 +56,7 @@ class Page(object):
                 if len(children)>0 :
                     for bo in  flatten(new_prefix, children):
                         yield bo
-                else:
-                    yield new_prefix
+                yield new_prefix
 
         deep_headings = self.deep_headings_list()
         return list(flatten([], deep_headings))
@@ -240,4 +239,3 @@ def iter_annotations(file):
 def dump_annotations(file):
     for page in iter_annotations(file):
         print(page.to_string())
-
