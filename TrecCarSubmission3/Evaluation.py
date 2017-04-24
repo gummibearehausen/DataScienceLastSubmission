@@ -2,6 +2,7 @@ import codecs
 from collections import defaultdict
 import numpy as np
 
+
 def query_rank_list(file_name_1, file_name_2):
     query_truth_set = read_qrel_file(file_name_2)
     print("number of queries in the qrel is: " + str(len(query_truth_set.keys())))

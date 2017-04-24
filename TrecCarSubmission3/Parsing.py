@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
 from tools import Annotator
-from pprint import pprint
+
 def tag_annotator(anno, facet):
-
-
     if facet =="ner" :
         ne = anno[facet]
         named_entities = []
@@ -84,7 +82,6 @@ def annotator(text, facet):
                 chunks.append(temp)
                 temp = " "
         return chunks
-
 
 
 if __name__ == "__main__":

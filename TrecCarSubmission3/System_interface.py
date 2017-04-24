@@ -1,5 +1,3 @@
-from trec_car.read_data import *
-
 import sys,lucene,os
 from Indexer_1 import IndexFiles
 from Searcher_1 import *

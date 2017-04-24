@@ -13,10 +13,7 @@ from org.apache.lucene.index import DirectoryReader
 from org.apache.lucene.queryparser.classic import QueryParser
 from org.apache.lucene.store import SimpleFSDirectory
 from org.apache.lucene.search import IndexSearcher, ScoreDoc
-
-
 from Indexer_1 import IndexFiles
-
 
 
 def run(searcher, analyzer):
@@ -113,11 +110,10 @@ def run5(searcher, analyzer, queries, hits_per_query, output_file, k):
         scoreDocs = searcher.search(query, hits_per_query).scoreDocs
         print ("%s total matching documents." % len(scoreDocs))
 
-
         top_k = int(k)
         pseudo_feedback = top_k_pseudo_feedback(scoreDocs, top_k, "contents", searcher)
-        def srlannotation(article_from_pseudo_result):
 
+        def srlannotation(article_from_pseudo_result):
             try:
                 srl_anno=annotator.getAnnotations(article_from_pseudo_result)
                 return srl_anno
@@ -125,7 +121,7 @@ def run5(searcher, analyzer, queries, hits_per_query, output_file, k):
                 return None
         args_top_k_pseudo = [ tag_annotator(srlannotation(ps),"srl")
                               for ps in pseudo_feedback]
-        args_as_text=""
+        args_as_text = ""
         if len(args_top_k_pseudo)!=0:
             args_as_text = " ".join(args_top_k_pseudo)
         new_query_as_text = query_as_text+" "+args_as_text
@@ -284,6 +280,7 @@ def search_engine_3(queries, hits):
     run3(searcher, analyzer, queries, hits, run_file)
     del searcher
     run_file.close()
+
 
 def search_engine_4(queries, hits):
     run_file = codecs.open("runfile", "w", "utf-8")
