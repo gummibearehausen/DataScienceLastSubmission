@@ -65,6 +65,10 @@ def eval_result(qrel_file_name):
     precision_average_queries = np.sum(prec_at_5_total) / float(num_of_query)
     precision_at_r_average_queries = np.sum(prec_at_r_total) / float(num_of_query)
     mrr_average_queries =np.sum(mrr_total)/float(num_of_query)
+    # map_ave = np.sum(map_total) / 70
+    # precision_average_queries = np.sum(prec_at_5_total) / 70
+    # precision_at_r_average_queries = np.sum(prec_at_r_total) / 70
+    # mrr_average_queries = np.sum(mrr_total) / 70
     eval = [map_ave,
                    precision_average_queries,
                    precision_at_r_average_queries,

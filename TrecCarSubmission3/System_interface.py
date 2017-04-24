@@ -2,13 +2,17 @@ from trec_car.read_data import *
 
 import sys,lucene,os
 from Indexer_1 import IndexFiles
-from Searcher_1 import search_engine_1
+from Searcher_1 import *
 from Queries import read_outline
 from Evaluation import eval_result
 """
 arg[1]=paragraphs
 arg[2]=outline
 arg[3]=hirarchical_qrel
+arg[4]: 1->baseline model tfidf
+        2->top k pseudeo feedback as query model
+            arg[5]=top k docs from the pseudo search result are selected
+            arg[6] document facet choice from pseudo feedback, it can be "entities", "content"
 paras are indexed in the folder 'BaseIndexFolder'
 """
 
@@ -21,6 +25,18 @@ os.path.join(base_dir, INDEX_DIR)
 indexParas = IndexFiles(sys.argv[1],os.path.join(base_dir, INDEX_DIR))
 queries=read_outline(sys.argv[2])
 hits_per_query = 2000
-search_engine_1(queries, hits_per_query)
-eval_result(sys.argv[3])
+
+model = int(sys.argv[4])
+if model ==1:
+    search_engine_1(queries, hits_per_query)
+    eval_result(sys.argv[3])
+
+elif model == 2:
+    k = sys.argv[5]
+    facet = sys.argv[6]
+    search_engine_2(queries, hits_per_query, k, facet)
+    eval_result(sys.argv[3])
+
+
+
 
