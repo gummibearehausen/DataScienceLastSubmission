@@ -49,10 +49,11 @@ def eval_result(qrel_file_name):
         rel_indices = rank_list.nonzero()
 
 
-        if len(rel_indices) != 0:
+        if len(rel_indices[0]) != 0:
             map = np.sum([1.0 / (i + 1) for i in rel_indices]) / true_para_num
             prec_at_5 = np.sum(rank_list[:5]) / 5.0
             prec_at_R = np.sum(rank_list[:true_para_num]) / float(true_para_num)
+            print rel_indices
             mrr = 1.0 /(rel_indices[0][0] + 1)
 
             prec_at_5_total.append(prec_at_5)
@@ -78,4 +79,3 @@ def eval_result(qrel_file_name):
 if __name__ == '__main__':
     pass
     # eval_result("/home/hz1024/Desktop/lastSubmissionLaura/Spritzer/spritzer.cbor.hierarchical.qrels")
-
