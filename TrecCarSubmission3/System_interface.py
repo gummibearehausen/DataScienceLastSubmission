@@ -3,6 +3,7 @@ from Indexer_1 import IndexFiles
 from Searcher_1 import *
 from Queries import read_outline
 from Evaluation import eval_result
+import time
 """
 arg[1]=paragraphs
 arg[2]=outline
@@ -48,6 +49,7 @@ elif model == 3:
 
 elif model == 4:
     search_engine_4(queries, hits_per_query)
+    time.sleep(3)
     eval_result(sys.argv[3])
 
 
