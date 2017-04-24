@@ -142,9 +142,12 @@ def run5(searcher, analyzer, queries, hits_per_query, output_file, k):
         args_top_k_pseudo = [ tag_annotator(srlannotation(ps),"srl")
                               for ps in pseudo_feedback]
         args_as_text = ""
-        if len(args_top_k_pseudo)!=0:
+        if len(args_top_k_pseudo)==1:
+            args_as_text = args_top_k_pseudo[0]
+
+        elif len(args_top_k_pseudo)>1:
             args_as_text = " ".join(args_top_k_pseudo)
-        new_query_as_text = query_as_text+" "+args_as_text
+        new_query_as_text = query_as_text+" "+re.sub(r'[^A-Za-z0-9]', ' ', args_as_text)
         query_prime = QueryParser("contents", analyzer).parse(new_query_as_text)
 
         scoreDocs_prime = searcher.search(query_prime, hits_per_query).scoreDocs
