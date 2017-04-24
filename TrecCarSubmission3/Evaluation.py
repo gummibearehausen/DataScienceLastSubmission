@@ -1,5 +1,4 @@
 import codecs
-from pprint import pprint
 from collections import defaultdict
 import numpy as np
 
@@ -50,13 +49,8 @@ def eval_result(qrel_file_name):
         true_para_num = true_para_num_per_query_list[q]
         rank_list = np.array(ranklist_per_query_list[q])
         rel_indices = rank_list.nonzero()
-
-
-
         if len(rel_indices[0]) != 0:
-
             map = np.sum([1.0*(list(rel_indices[0]).index(i)+1) / (float(i) + 1) for i in rel_indices[0]]) / float(true_para_num)
-            print("2", rel_indices,map)
             prec_at_5 = np.sum(rank_list[:5]) / 5.0
             prec_at_R = np.sum(rank_list[:true_para_num]) / float(true_para_num)
             mrr = 1.0 /(rel_indices[0][0] + 1)
@@ -83,4 +77,3 @@ def eval_result(qrel_file_name):
 
 if __name__ == '__main__':
     pass
-    # eval_result("/home/hz1024/Desktop/lastSubmissionLaura/Spritzer/spritzer.cbor.hierarchical.qrels")
