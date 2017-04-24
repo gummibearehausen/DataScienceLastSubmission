@@ -211,7 +211,7 @@ def run4(searcher, analyzer, queries, hits_per_query, output_file):
 
 
 
-def run5(searcher, analyzer, queries, hits_per_query, output_file, w2v_model):
+def run6(searcher, analyzer, queries, hits_per_query, output_file, w2v_model):
     #queries = [ [query_text],[query_id]]
     queries_text = queries[0]
     queries_ids = queries[1]
@@ -257,7 +257,7 @@ def run5(searcher, analyzer, queries, hits_per_query, output_file, w2v_model):
 
 
 
-def run6(searcher, analyzer, queries, hits_per_query, output_file, w2v_model):
+def run7(searcher, analyzer, queries, hits_per_query, output_file, w2v_model):
     #queries = [ [query_text],[query_id]]
     queries_text = queries[0]
     queries_ids = queries[1]
@@ -435,7 +435,7 @@ def search_engine_4(queries, hits):
 
 
 
-def search_engine_5(queries, hits, w2v_model):
+def search_engine_6(queries, hits, w2v_model):
     run_file = codecs.open("runfile", "w", "utf-8")
     # lucene.initVM(vmargs=['-Djava.awt.headless=true'])
     print ('lucene', lucene.VERSION)
@@ -447,7 +447,7 @@ def search_engine_5(queries, hits, w2v_model):
     del searcher
     run_file.close()
 
-def search_engine_6(queries, hits, w2v_model):
+def search_engine_7(queries, hits, w2v_model):
     run_file = codecs.open("runfile", "w", "utf-8")
     # lucene.initVM(vmargs=['-Djava.awt.headless=true'])
     print ('lucene', lucene.VERSION)

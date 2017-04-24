@@ -51,11 +51,16 @@ elif model == 4:
     eval_result(sys.argv[3])
 
 
+
 elif model == 5:
-    search_engine_4(queries, hits_per_query, sys.argv[5])
+    search_engine_5(queries, hits_per_query, int(sys.argv[5]))
     eval_result(sys.argv[3])
 
 elif model == 6:
-    search_engine_5(queries, hits_per_query, sys.argv[5])
+    search_engine_6(queries, hits_per_query, sys.argv[5])
+    eval_result(sys.argv[3])
+
+elif model == 7:
+    search_engine_7(queries, hits_per_query, sys.argv[5])
     eval_result(sys.argv[3])
 
