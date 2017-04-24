@@ -48,18 +48,18 @@ Requires: Running ```word2vec_setup.py <corpus> <output file (ex. corpus-full)>`
 Usage: ```python System_interface.py <paragraphs> <outline> <qrel> 7 <word2vec model (ex. corpus-full.bin)> ```  
 
 # Results
-##MAP is for top 1000 search result
+## MAP is for top 1000 search result
 # results reported here are using test-200
 
 
-##model 1:
+## model 1:
 MAP: 0.283191417191
 P@5: 0.1361003861
 p@r: 0.203789292461
 MMR: 0.365857122018
 
 
-##model 2 contents
+## model 2 contents
 
 MAP: 0.273193549825
 P@5: 0.127992277992
@@ -67,20 +67,20 @@ p@r: 0.182707296189
 MMR: 0.340267582004
 
 
-##model 2 entities
+## model 2 entities
 
 MAP: 0.226190895378
 P@5: 0.114768339768
 p@r: 0.146440191272
 MMR: 0.295889908642
 
-model 3
+## model 3
 MAP: 0.281396192409
 P@5: 0.133397683398
 p@r: 0.20202368757
 MMR: 0.364631059843
 
-##model 4
+## model 4
 MAP: 0.276497298248
 P@5: 0.131370656371
 p@r: 0.197332226628
