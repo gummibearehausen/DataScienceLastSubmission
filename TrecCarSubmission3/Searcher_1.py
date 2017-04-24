@@ -13,6 +13,7 @@ from org.apache.lucene.index import DirectoryReader
 from org.apache.lucene.queryparser.classic import QueryParser
 from org.apache.lucene.store import SimpleFSDirectory
 from org.apache.lucene.search import IndexSearcher, ScoreDoc
+
 import word2vec
 
 
@@ -34,11 +35,12 @@ def content_from_id(id):
         return None
 
 
+
 def run(searcher, analyzer):
     while True:
         print ()
         print ("Hit enter with no input to quit.")
-        command = raw_input("Query:")
+        command = input("Query:")
         if command == '':
             return
 
@@ -86,7 +88,6 @@ def run1(searcher, analyzer, queries, hits_per_query, output_file):
 
 
 def run2(searcher, analyzer, queries, hits_per_query, output_file, k, facet):
-    #queries = [ [query_text],[query_id]]
     queries_text = queries[0]
     queries_ids = queries[1]
 
@@ -108,13 +109,49 @@ def run2(searcher, analyzer, queries, hits_per_query, output_file, k, facet):
         query_prime = QueryParser("contents", analyzer).parse(query_as_text+pseudo_feedback_as_text)
 
         scoreDocs_prime = searcher.search(query_prime, hits_per_query).scoreDocs
-        scoreDocs = scoreDocs_prime
 
-        runfile_writer(scoreDocs, searcher, output_file, query_as_id)
+        runfile_writer(scoreDocs_prime, searcher, output_file, query_as_id)
+
+
+def run5(searcher, analyzer, queries, hits_per_query, output_file, k):
+    from tools import Annotator
+    annotator = Annotator()
+    queries_text = queries[0]
+    queries_ids = queries[1]
+
+    if len(queries_text)!= len(queries_ids):
+        print("Query errors")
+        exit()
+    for i in range(len(queries_text)):
+        query_as_text = queries_text[i]
+
+        query_as_id = queries_ids[i]
+        query = QueryParser("contents", analyzer).parse(query_as_text)
+        scoreDocs = searcher.search(query, hits_per_query).scoreDocs
+        print ("%s total matching documents." % len(scoreDocs))
+
+        top_k = int(k)
+        pseudo_feedback = top_k_pseudo_feedback(scoreDocs, top_k, "contents", searcher)
+
+        def srlannotation(article_from_pseudo_result):
+            try:
+                srl_anno=annotator.getAnnotations(article_from_pseudo_result)
+                return srl_anno
+            except:
+                return None
+        args_top_k_pseudo = [ tag_annotator(srlannotation(ps),"srl")
+                              for ps in pseudo_feedback]
+        args_as_text = ""
+        if len(args_top_k_pseudo)!=0:
+            args_as_text = " ".join(args_top_k_pseudo)
+        new_query_as_text = query_as_text+" "+args_as_text
+        query_prime = QueryParser("contents", analyzer).parse(new_query_as_text)
+
+        scoreDocs_prime = searcher.search(query_prime, hits_per_query).scoreDocs
+        runfile_writer(scoreDocs_prime, searcher, output_file, query_as_id)
 
 
 def run3(searcher, analyzer, queries, hits_per_query, output_file):
-    #queries = [ [query_text],[query_id]]
     queries_text = queries[0]
     queries_ids = queries[1]
     page_names = queries[2]
@@ -163,12 +200,10 @@ def run4(searcher, analyzer, queries, hits_per_query, output_file):
         query_as_text = queries_text[i]
         query_annotation = annotator.getAnnotations(query_as_text)
         named_entities = tag_annotator(query_annotation, "ner")
-
         query_as_id = queries_ids[i]
         if len(named_entities)!=0:
             query_as_text+=" "
             query_as_text+=" ".join(named_entities)
-
         query = QueryParser("contents", analyzer).parse(query_as_text)
         scoreDocs = searcher.search(query, hits_per_query).scoreDocs
         print ("%s total matching documents." % len(scoreDocs))
@@ -314,7 +349,6 @@ def interpolate_rankings(rankings, weights):
 
 
 
-
 def runfile_writer(scoreDocs, searcher, output_file, query_as_id):
     rank = 1
     if len(scoreDocs)!=0:
@@ -324,7 +358,6 @@ def runfile_writer(scoreDocs, searcher, output_file, query_as_id):
                                             str(rank),
                                             str(1.0 / rank),
                                             "BBT"])
-            # print(search_result_query)
             output_file.write(search_result_query + "\n")
             rank += 1
     else:
@@ -360,6 +393,20 @@ def search_engine_2(queries, hits, k, facet):
     run2(searcher, analyzer, queries, hits, run_file, k, facet)
     del searcher
     run_file.close()
+
+
+def search_engine_5(queries, hits, k):
+    run_file = codecs.open("runfile", "w", "utf-8")
+    # lucene.initVM(vmargs=['-Djava.awt.headless=true'])
+    print ('lucene', lucene.VERSION)
+    base_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
+    directory = SimpleFSDirectory(Paths.get(os.path.join(base_dir, INDEX_DIR)))
+    searcher = IndexSearcher(DirectoryReader.open(directory))
+    analyzer = StandardAnalyzer()
+    run5(searcher, analyzer, queries, hits, run_file, k)
+    del searcher
+    run_file.close()
+
 
 def search_engine_3(queries, hits):
     run_file = codecs.open("runfile", "w", "utf-8")

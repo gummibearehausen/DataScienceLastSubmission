@@ -56,7 +56,7 @@ class Annotator:
 		    executable='senna-osx'
 		senna_executable = os.path.join(package_directory,executable)
 		# senna_executable = os.path.basename(package_directory)
-		print(senna_executable)
+
 		cwd=os.getcwd()
 		os.chdir(package_directory)
 		p = subprocess.Popen(senna_executable,stdout=subprocess.PIPE, stdin=subprocess.PIPE)
@@ -106,7 +106,7 @@ class Annotator:
 		verb=[]
 		srls=[]
 		syn=[]
-		pprint(senna_tags)
+
 		for senna_tag in senna_tags:
 			senna_tag=senna_tag.split("\t")
 			words+=[senna_tag[0].strip()]

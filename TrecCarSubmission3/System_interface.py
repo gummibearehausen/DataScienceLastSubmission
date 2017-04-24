@@ -1,5 +1,3 @@
-from trec_car.read_data import *
-
 import sys,lucene,os
 from Indexer_1 import IndexFiles
 from Searcher_1 import *
@@ -13,6 +11,9 @@ arg[4]: 1->baseline model tfidf
         2->top k pseudeo feedback as query model
             arg[5]=top k docs from the pseudo search result are selected
             arg[6] document facet choice from pseudo feedback, it can be "entities", "content"
+        4-> give more weights to the entities in the query
+        5->arguments A0 and A1 from top-k articles from the pseudo search  result as query expansion
+            arg[5]=top k docs from the pseudo search result are selected
 paras are indexed in the folder 'BaseIndexFolder'
 """
 
@@ -57,3 +58,4 @@ elif model == 5:
 elif model == 6:
     search_engine_5(queries, hits_per_query, sys.argv[5])
     eval_result(sys.argv[3])
+

@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
 from tools import Annotator
-from pprint import pprint
+
 def tag_annotator(anno, facet):
-
-
     if facet =="ner" :
         ne = anno[facet]
         named_entities = []
@@ -33,6 +31,24 @@ def tag_annotator(anno, facet):
                 chunks.append(temp)
                 temp = " "
         return chunks
+    else:
+        args_total = []
+        if anno:
+            srl_annotation = anno["srl"]
+            key_sets = {"A1", "A0"}
+
+            if len(srl_annotation)!=0:
+                for each_annotation in srl_annotation:
+                    if len(each_annotation)!=0:
+                        args = [each_annotation[arg_key] for arg_key in key_sets if arg_key in each_annotation]
+                        args_total += args
+        if len(args_total)!=0:
+            s = " ".join(args_total)
+            return s
+        else:
+            s = " "
+            return s
+
 
 def annotator(text, facet):
     anno = Annotator()
@@ -68,20 +84,8 @@ def annotator(text, facet):
         return chunks
 
 
-
 if __name__ == "__main__":
-    text = " Bill Clinton is shaking handing with Barack Obama"
-    ne = annotator(text,"chunk")
-    named_entities = []
-    temp=''
-    pprint(ne)
-    # for pair in ne:
-    #     if pair[1][0]=="B":
-    #         temp+=pair[0]
-    #     elif pair[1][0] =="I":
-    #         temp += " "+ pair[0]
-    #     elif pair[1][0] =="E":
-    #         temp += " " + pair[0]
-    #         named_entities.append(temp)
-    #         temp =" "
-    # print(named_entities)
+    pass
+
+
+
