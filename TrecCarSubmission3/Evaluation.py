@@ -37,8 +37,7 @@ def eval_result(qrel_file_name):
     return_result = query_rank_list(run_file_name,qrel_file_name)
     true_para_num_per_query_list = return_result[0]
     ranklist_per_query_list = return_result[1]
-    if len(ranklist_per_query_list)>1000:
-        ranklist_per_query_list=ranklist_per_query_list[:1000]
+
 
     num_of_query = len(true_para_num_per_query_list)
     print("number of queries in the runfile is: " + str(num_of_query))
@@ -48,7 +47,11 @@ def eval_result(qrel_file_name):
     mrr_total = []
     for q in range(num_of_query):
         true_para_num = true_para_num_per_query_list[q]
-        rank_list = np.array(ranklist_per_query_list[q])
+        r = ranklist_per_query_list[q]
+        if len(r)>1000:
+            r_prime = r[:1000]
+            r = r_prime
+        rank_list = np.array(r)
         rel_indices = rank_list.nonzero()
         if len(rel_indices[0]) != 0:
             map = np.sum([1.0*(list(rel_indices[0]).index(i)+1) / (float(i) + 1) for i in rel_indices[0]]) / float(true_para_num)

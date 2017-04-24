@@ -83,7 +83,7 @@ def run1(searcher, analyzer, queries, hits_per_query, output_file):
         query_as_id = queries_ids[i]
         query = QueryParser("contents", analyzer).parse(query_as_text)
         scoreDocs = searcher.search(query, hits_per_query).scoreDocs
-        print("Query " + str(i) + " " + query_as_text)
+        print("Query " + str(i))
         runfile_writer(scoreDocs, searcher, output_file, query_as_id)
 
 
@@ -114,6 +114,7 @@ def run2(searcher, analyzer, queries, hits_per_query, output_file, k, facet):
 
 
 def run5(searcher, analyzer, queries, hits_per_query, output_file, k):
+    print("*"*20 + "\n\n" + "Please be patient because it requires annotation\n\n"+"*"*20)
     from tools import Annotator
     annotator = Annotator()
     queries_text = queries[0]
@@ -122,7 +123,7 @@ def run5(searcher, analyzer, queries, hits_per_query, output_file, k):
     if len(queries_text)!= len(queries_ids):
         print("Query errors")
         exit()
-    for i in range(len(queries_text)):
+    for i in range(len(queries_text[:])):
         query_as_text = queries_text[i]
 
         query_as_id = queries_ids[i]
@@ -169,7 +170,7 @@ def run3(searcher, analyzer, queries, hits_per_query, output_file):
         page_name = page_names[i]
         current_title = page_name
 
-
+ 
         if last_title != current_title:
             query = QueryParser("contents", analyzer).parse(page_name)
             scoreDocs = searcher.search(query, hits_per_query).scoreDocs
@@ -198,14 +199,17 @@ def run4(searcher, analyzer, queries, hits_per_query, output_file):
     if len(queries_text)!= len(queries_ids):
         print("Query errors")
         exit()
-    for i in range(len(queries_text)):
+    for i in range(len(queries_text[:])):
         query_as_text = queries_text[i]
-        query_annotation = annotator.getAnnotations(query_as_text)
+        try:
+            query_annotation = annotator.getAnnotations(query_as_text)
+        except:
+            query_annotation= None
         named_entities = tag_annotator(query_annotation, "ner")
         query_as_id = queries_ids[i]
         if len(named_entities)!=0:
             query_as_text+=" "
-            query_as_text+=" ".join(named_entities)
+            query_as_text+=re.sub(r"[^A-Za-z0-9]"," ",named_entities)
         query = QueryParser("contents", analyzer).parse(query_as_text)
         scoreDocs = searcher.search(query, hits_per_query).scoreDocs
         print ("%s total matching documents." % len(scoreDocs))

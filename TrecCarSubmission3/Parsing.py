@@ -2,20 +2,25 @@
 from tools import Annotator
 
 def tag_annotator(anno, facet):
-    if facet =="ner" :
-        ne = anno[facet]
-        named_entities = []
-        temp = ''
-        for pair in ne:
-            if pair[1][0] == "B":
-                temp += pair[0]
-            elif pair[1][0] == "I":
-                temp += " " + pair[0]
-            elif pair[1][0] == "E":
-                temp += " " + pair[0]
-                named_entities.append(temp)
-                temp = " "
-        return named_entities
+    if anno:
+        if facet =="ner" :
+            ne = anno[facet]
+            named_entities = []
+            temp = ''
+            for pair in ne:
+                if pair[1][0] == "B":
+                    temp += pair[0]
+                elif pair[1][0] == "I":
+                    temp += " " + pair[0]
+                elif pair[1][0] == "E":
+                    temp += " " + pair[0]
+                    named_entities.append(temp)
+                    temp = " "
+            s=" ".join(named_entities)
+            return s
+        else:
+            s=" "
+            return s
 
     elif facet == "chunk":
         chunk_pairs = anno[facet]
