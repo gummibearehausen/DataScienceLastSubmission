@@ -23,7 +23,7 @@ paras are indexed in the folder 'BaseIndexFolder'
 ## 1. Baseline
 This is the baseline which uses the pagename + section path as a query, using TF-IDF as a similarity measure  
 Usage: ```python System_interface.py <paragraphs> <outline> <qrel> 1```
-## 2. Psudo-Feedback
+## 2. Pseudo-Feedback
 This method takes the content of the top k documents from an initial search and uses that as a query for a second round of searching.  
 Usage: ```python System_interface.py <paragraphs> <outline> <qrel> 2 <k> <contents|entities>```  
 *contents* = The entire text from the top k documents is used as a query  
