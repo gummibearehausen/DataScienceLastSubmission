@@ -14,9 +14,6 @@ def read_outline(outlines):
             headings = p.nested_headings()
             # print(headings)
 
-            if len(p.outline())>2:
-                print('heading 1=', p.outline()[0].heading)
-
             # print('deep headings= ', len(p.deep_headings_list()))
             #
             # print('flat headings= ', p.flat_headings_list())

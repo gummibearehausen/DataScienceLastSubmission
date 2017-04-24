@@ -22,9 +22,12 @@ lucene.initVM(vmargs=['-Djava.awt.headless=true'])
 base_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
 os.path.join(base_dir, INDEX_DIR)
 
-indexParas = IndexFiles(sys.argv[1],os.path.join(base_dir, INDEX_DIR))
+
+
+# indexParas = IndexFiles(sys.argv[1],os.path.join(base_dir, INDEX_DIR))
+
 queries=read_outline(sys.argv[2])
-hits_per_query = 2000
+hits_per_query = 200
 
 model = int(sys.argv[4])
 if model ==1:
@@ -44,4 +47,13 @@ elif model == 3:
 
 elif model == 4:
     search_engine_4(queries, hits_per_query)
+    eval_result(sys.argv[3])
+
+
+elif model == 5:
+    search_engine_4(queries, hits_per_query, sys.argv[5])
+    eval_result(sys.argv[3])
+
+elif model == 6:
+    search_engine_5(queries, hits_per_query, sys.argv[5])
     eval_result(sys.argv[3])

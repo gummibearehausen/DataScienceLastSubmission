@@ -4,7 +4,7 @@
 INDEX_DIR = "BaseIndexFolder"
 # INDEX_DIR = "IndexFiles.index"
 import sys, os, lucene
-import codecs
+import codecs, sys
 import re
 from Parsing import tag_annotator
 from java.nio.file import Paths
@@ -13,10 +13,25 @@ from org.apache.lucene.index import DirectoryReader
 from org.apache.lucene.queryparser.classic import QueryParser
 from org.apache.lucene.store import SimpleFSDirectory
 from org.apache.lucene.search import IndexSearcher, ScoreDoc
+import word2vec
 
 
 from Indexer_1 import IndexFiles
 
+
+
+def content_from_id(id):
+    base_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
+    directory = SimpleFSDirectory(Paths.get(INDEX_DIR))
+    searcher = IndexSearcher(DirectoryReader.open(directory))
+    analyzer = StandardAnalyzer()
+
+    query = QueryParser("paraId", analyzer).parse(id)
+    scoreDocs = searcher.search(query, 1).scoreDocs
+    if len(scoreDocs) == 1:
+        return searcher.doc(scoreDocs[0].doc).get("contents")
+    else:
+        return None
 
 
 def run(searcher, analyzer):
@@ -66,7 +81,7 @@ def run1(searcher, analyzer, queries, hits_per_query, output_file):
         query_as_id = queries_ids[i]
         query = QueryParser("contents", analyzer).parse(query_as_text)
         scoreDocs = searcher.search(query, hits_per_query).scoreDocs
-        print ("%s total matching documents." % len(scoreDocs))
+        print("Query " + str(i) + " " + query_as_text)
         runfile_writer(scoreDocs, searcher, output_file, query_as_id)
 
 
@@ -128,9 +143,10 @@ def run3(searcher, analyzer, queries, hits_per_query, output_file):
         query = QueryParser("contents", analyzer).parse(query_as_text)
         scoreDocs2 = searcher.search(query, hits_per_query).scoreDocs
 
-        finalScoreDocs = interpolate_rankings( [scoreDocs, scoreDocs2], [1, 0] )
+        finalScoreDocs = interpolate_rankings( [scoreDocs, scoreDocs2], [0.1, 0.9] )
         print(len(scoreDocs))
         runfile_writer(finalScoreDocs, searcher, output_file, query_as_id)
+
 
 
 def run4(searcher, analyzer, queries, hits_per_query, output_file):
@@ -138,6 +154,7 @@ def run4(searcher, analyzer, queries, hits_per_query, output_file):
     annotator = Annotator()
     queries_text = queries[0]
     queries_ids = queries[1]
+
 
     if len(queries_text)!= len(queries_ids):
         print("Query errors")
@@ -156,6 +173,123 @@ def run4(searcher, analyzer, queries, hits_per_query, output_file):
         scoreDocs = searcher.search(query, hits_per_query).scoreDocs
         print ("%s total matching documents." % len(scoreDocs))
         runfile_writer(scoreDocs, searcher, output_file, query_as_id)
+
+
+
+def run5(searcher, analyzer, queries, hits_per_query, output_file, w2v_model):
+    #queries = [ [query_text],[query_id]]
+    queries_text = queries[0]
+    queries_ids = queries[1]
+    page_names = queries[2]
+
+    print("Loading w2v Model")
+    model = word2vec.load(w2v_model)
+    print("Word2Vec model loaded")
+
+
+    if len(queries_text)!= len(queries_ids):
+        print("Query errors")
+        exit()
+
+    queryCount = float(len(queries_text))
+    
+    for i in range(len(queries_text)):
+        query_as_text = queries_text[i]
+        query_as_id = queries_ids[i]
+
+        tokens = query_as_text.split()
+        w2v_tokens = []
+        # if not ( "See also" in query_as_text or "External links" in query_as_text or "References" in query_as_text ):
+        for t in tokens:
+            if t in model:
+                w2v_tokens.append(t)
+
+        
+        ndx, _ = model.analogy(w2v_tokens, [])
+        expansionWords = " ".join([ re.sub("[_|/]", " ", re.sub(r"[\(|\)|'|\"|:]", "", word)) for word in model.vocab[ndx]])
+        sys.stdout.write("\r")
+        sys.stdout.write("Progress: %f%%  Count: %d" % ( (float(i) / queryCount)*100 , i))
+        sys.stdout.flush()
+
+        try:
+            query = QueryParser("contents", analyzer).parse(query_as_text + " " + expansionWords)
+        except:
+            query = QueryParser("contents", analyzer).parse(query_as_text)
+
+        scoreDocs = searcher.search(query, hits_per_query).scoreDocs
+
+        runfile_writer(scoreDocs, searcher, output_file, query_as_id)
+
+
+
+def run6(searcher, analyzer, queries, hits_per_query, output_file, w2v_model):
+    #queries = [ [query_text],[query_id]]
+    queries_text = queries[0]
+    queries_ids = queries[1]
+    page_names = queries[2]
+
+    print("Loading w2v Model")
+    model = word2vec.load(w2v_model)
+    print("Word2Vec model loaded")
+
+    if len(queries_text)!= len(queries_ids):
+        print("Query errors")
+        exit()
+
+    queryCount = float(len(queries_text))
+    
+    for i in range(len(queries_text)):
+        query_as_text = queries_text[i]
+        query_as_id = queries_ids[i]
+
+        sys.stdout.write("\r")
+        sys.stdout.write("Progress: %f%%  Count: %d" % ( (float(i) / queryCount)*100 , i))
+        sys.stdout.flush()
+
+        w2v_tokens = []
+        tokens = query_as_text.split()
+        for t in tokens:
+            if t in model:
+                w2v_tokens.append(t)
+
+
+        queryVecs = [ model[w] for w in w2v_tokens ]
+
+        query = QueryParser("contents", analyzer).parse(query_as_text)
+        scoreDocs = searcher.search(query, hits_per_query).scoreDocs
+
+        newRanks = []
+        for doc in scoreDocs:
+            content = searcher.doc( doc.doc ).get("contents")
+            total = 0
+            count = 0
+            # print(query_as_text)
+            # print("&"*40)
+            for t in re.findall("[\w-]+", content):
+                # len greater than 3 is a braindead removal of stopwords
+                if len(t) > 3 and t in model:
+                    temp = float("inf")
+                    for qVect in queryVecs:
+                        temp = min(temp, sum(abs( model[t] - qVect )))
+                    # print(t + " -> " + str(temp))
+                    total += temp
+                    count += 1
+            # print("====================================")
+            if count > 0:
+                newRanks.append( total / count )
+            else:
+                newRanks.append(float("inf"))
+
+        
+
+        scoreDocs = zip(newRanks, scoreDocs)
+
+        scoreDocs = sorted(scoreDocs, key=lambda x: x[0])
+        # print scoreDocs
+
+        scoreDocs = [s[1] for s in scoreDocs]
+        runfile_writer(scoreDocs, searcher, output_file, query_as_id)
+
 
 
 def interpolate_rankings(rankings, weights):
@@ -180,11 +314,11 @@ def interpolate_rankings(rankings, weights):
 
 
 
+
 def runfile_writer(scoreDocs, searcher, output_file, query_as_id):
     rank = 1
     if len(scoreDocs)!=0:
-        for scoreDoc in scoreDocs:
-            doc = searcher.doc(scoreDoc.doc)
+        for doc in [ searcher.doc(x.doc) for x in scoreDocs ]:
             search_result_query = ' '.join([query_as_id, str(0),
                                             doc.get("paraId"),
                                             str(rank),
@@ -239,6 +373,7 @@ def search_engine_3(queries, hits):
     del searcher
     run_file.close()
 
+
 def search_engine_4(queries, hits):
     run_file = codecs.open("runfile", "w", "utf-8")
     # lucene.initVM(vmargs=['-Djava.awt.headless=true'])
@@ -248,6 +383,32 @@ def search_engine_4(queries, hits):
     searcher = IndexSearcher(DirectoryReader.open(directory))
     analyzer = StandardAnalyzer()
     run4(searcher, analyzer, queries, hits, run_file)
+    del searcher
+    run_file.close()
+
+
+
+def search_engine_5(queries, hits, w2v_model):
+    run_file = codecs.open("runfile", "w", "utf-8")
+    # lucene.initVM(vmargs=['-Djava.awt.headless=true'])
+    print ('lucene', lucene.VERSION)
+    base_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
+    directory = SimpleFSDirectory(Paths.get(os.path.join(base_dir, INDEX_DIR)))
+    searcher = IndexSearcher(DirectoryReader.open(directory))
+    analyzer = StandardAnalyzer()
+    run5(searcher, analyzer, queries, hits, run_file, w2v_model)
+    del searcher
+    run_file.close()
+
+def search_engine_6(queries, hits, w2v_model):
+    run_file = codecs.open("runfile", "w", "utf-8")
+    # lucene.initVM(vmargs=['-Djava.awt.headless=true'])
+    print ('lucene', lucene.VERSION)
+    base_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
+    directory = SimpleFSDirectory(Paths.get(os.path.join(base_dir, INDEX_DIR)))
+    searcher = IndexSearcher(DirectoryReader.open(directory))
+    analyzer = StandardAnalyzer()
+    run6(searcher, analyzer, queries, hits, run_file, w2v_model)
     del searcher
     run_file.close()
 
