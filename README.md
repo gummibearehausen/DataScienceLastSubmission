@@ -19,7 +19,34 @@ arg[4]: 1->baseline model tfidf
 paras are indexed in the folder 'BaseIndexFolder'
 
 
-result:
+# Method Overviews
+## 1. Baseline
+This is the baseline which uses the pagename + section path as a query, using TF-IDF as a similarity measure  
+Usage: ```python System_interface.py <paragraphs> <outline> <qrel> 1```
+## 2. Psudo-Feedback
+This method takes the content of the top k documents from an initial search and uses that as a query for a second round of searching.  
+Usage: ```python System_interface.py <paragraphs> <outline> <qrel> 2 <k> <contents|entities>```  
+*contents* = The entire text from the top k documents is used as a query  
+*entities* = Only the entities from the top k documents are used as a query  
+## 3. Title Query Integration
+This method first uses just the page title as a query, which seems to often contain passages relevent to the article, then uses the title + section path as query. The results of these two searches are then integrated with a weight of 0.1 on the page name query and 0.9 on the full query.  
+Usage: ```python System_interface.py <paragraphs> <outline> <qrel> 3 ```  
+## 4. Named Entitiy 
+This method first performs named entity recognition on the query, and appends the named entities to the query. This means the query will have double mentions of named entities thus forcing more weight onto those terms.  
+Usage: ```python System_interface.py <paragraphs> <outline> <qrel> 4 ```  
+## 5. Pseudorelevence Feedback
+
+Usage: ```python System_interface.py <paragraphs> <outline> <qrel> 5 <k> ```  
+## 6. Word2Vec Query Expansion
+This method uses a word2vec model trained on the corpus. All the terms in the query which have an entry in the word2vec model are converted into their vector representation and combined to find a set of most similiar words. These words are then added to the query as an expansion.  
+Requires: Running ```word2vec_setup.py <corpus> <output file (ex. corpus-full)>```  
+Usage: ```python System_interface.py <paragraphs> <outline> <qrel> 6 <word2vec model (ex. corpus-full.bin)> ```  
+## 7. Word2Vec Reranking
+This method first builds a result set of documents using the standard query. A vector for each of the terms in the query is found. Then for each document in the result set: the sum of similarity between each term in the document and the most similiar query term is found. The sum of all similarities is the new ranking for the document.  
+Requires: Running ```word2vec_setup.py <corpus> <output file (ex. corpus-full)>```  
+Usage: ```python System_interface.py <paragraphs> <outline> <qrel> 7 <word2vec model (ex. corpus-full.bin)> ```  
+
+# Results
 MAP is for top 1000 search result
 
 
@@ -50,3 +77,5 @@ MAP: 0.281396192409
 P@5: 0.133397683398
 p@r: 0.20202368757
 MMR: 0.364631059843
+
+
