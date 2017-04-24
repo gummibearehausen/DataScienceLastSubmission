@@ -169,7 +169,6 @@ def run3(searcher, analyzer, queries, hits_per_query, output_file):
         page_name = page_names[i]
         current_title = page_name
 
-        print(query_as_text)
 
         if last_title != current_title:
             query = QueryParser("contents", analyzer).parse(page_name)
