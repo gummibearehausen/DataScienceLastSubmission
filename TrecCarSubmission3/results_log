@@ -1,0 +1,33 @@
+
+
+Dataset: Test200
+
+- Baseline:
+
+number of queries in the qrel is: 2270
+number of queries in the runfile is: 2072
+MAP: 0.247225227254
+P@5: 0.1361003861
+p@r: 0.203789292461
+MMR: 0.365857122018
+
+- Method 3 [0.1, 0.9]
+
+MAP: 0.246047873138
+P@5: 0.133397683398
+p@r: 0.20202368757
+MMR: 0.364635879163
+
+- Method 3 [0.3, 0.7]
+number of queries in the qrel is: 2270
+number of queries in the runfile is: 2072
+MAP: 0.234668538006
+P@5: 0.125096525097
+p@r: 0.18958342379
+MMR: 0.351435772578
+
+- Method 3 [1, 0]
+MAP: 0.104659279789
+P@5: 0.0662162162162
+p@r: 0.0593519065315
+MMR: 0.164215600667
