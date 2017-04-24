@@ -5,6 +5,7 @@ import re
 def read_outline(outlines):
     hierarchical_headings =[]
     hierarchical_headings_ids =[]
+    page_names = []
     with open(outlines, 'rb') as f:
         for p in iter_annotations(f):
             # print('\npagename:', p.page_name)
@@ -27,10 +28,7 @@ def read_outline(outlines):
 
                 hierarchical_headings.append(hier_heading_text)
                 hierarchical_headings_ids.append(hier_heading_id)
-
-                print(hier_heading_id)
+                page_names.append( p.page_name )
                 # print(".........")
-    output = list([hierarchical_headings,hierarchical_headings_ids])
+    output = list([hierarchical_headings,hierarchical_headings_ids, page_names])
     return output
-
-

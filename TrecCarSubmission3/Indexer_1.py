@@ -30,7 +30,7 @@ class Ticker(object):
 class IndexFiles(object):
     """Usage: python IndexFiles <doc_directory>"""
 
-    def __init__(self, paragraphs, storeDir):
+    def __init__(self, paragraphs, storeDir, reindex=False):
 
         if not os.path.exists(storeDir):
             os.mkdir(storeDir)
@@ -44,7 +44,10 @@ class IndexFiles(object):
         config.setOpenMode(IndexWriterConfig.OpenMode.CREATE)
         writer = IndexWriter(store, config)
 
-        self.indexDocs(paragraphs, writer)
+        if not reindex:
+            self.indexDocs(paragraphs, writer)
+        else:
+            self.reIndexDocs(paragraphs, writer)
         ticker = Ticker()
         print 'commit index',
         threading.Thread(target=ticker.run).start()
@@ -104,7 +107,28 @@ class IndexFiles(object):
 
                 print("*" * 20)
 
+    def reIndexDocs(self, docs, writer):
 
+        t1 = FieldType()
+        t1.setStored(True)
+        t1.setTokenized(False)
+        t1.setIndexOptions(IndexOptions.DOCS_AND_FREQS)
+
+        t2 = FieldType()
+        t2.setStored(True)
+        t2.setTokenized(True)
+        t2.setIndexOptions(IndexOptions.DOCS_AND_FREQS_AND_POSITIONS)
+
+
+        for d in docs:
+            try:
+                doc = Document()
+                doc.add(Field("paraId", d.get("paraId"), t1))
+                doc.add(Field("entities", d.get("entities"), t1))
+                doc.add(Field("contents", d.get("contents"), t2))
+                writer.addDocument(doc)
+            except Exception, e:
+                print "Failed in indexDocs:", e
 
 if __name__ == '__main__':
     pass

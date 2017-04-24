@@ -37,6 +37,6 @@ elif model == 2:
     search_engine_2(queries, hits_per_query, k, facet)
     eval_result(sys.argv[3])
 
-
-
-
+elif model == 3:
+    search_engine_3(queries, hits_per_query)
+    eval_result(sys.argv[3])

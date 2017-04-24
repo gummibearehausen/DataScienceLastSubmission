@@ -11,7 +11,10 @@ from org.apache.lucene.analysis.standard import StandardAnalyzer
 from org.apache.lucene.index import DirectoryReader
 from org.apache.lucene.queryparser.classic import QueryParser
 from org.apache.lucene.store import SimpleFSDirectory
-from org.apache.lucene.search import IndexSearcher
+from org.apache.lucene.search import IndexSearcher, ScoreDoc
+
+
+from Indexer_1 import IndexFiles
 
 
 
@@ -39,7 +42,7 @@ def text_normalisation(scoreDoc, doc_facet, searcher):
     lucene_doc = searcher.doc(scoreDoc.doc)
     para_text = lucene_doc.get(doc_facet)
     # print(para_text)
-    normalised_text = re.sub(r"[^A-Za-z0-9]", " ", para_text)
+    normalised_text = re.sub("[^A-Za-z0-9]", " ", para_text)
     return normalised_text
 
 
@@ -93,13 +96,69 @@ def run2(searcher, analyzer, queries, hits_per_query, output_file, k, facet):
 
         runfile_writer(scoreDocs, searcher, output_file, query_as_id)
 
+def run3(searcher, analyzer, queries, hits_per_query, output_file):
+    #queries = [ [query_text],[query_id]]
+    queries_text = queries[0]
+    queries_ids = queries[1]
+    page_names = queries[2]
+
+    if len(queries_text)!= len(queries_ids):
+        print("Query errors")
+        exit()
+    last_title = None
+    for i in range(len(queries_text)):
+        query_as_text = queries_text[i]
+        query_as_id = queries_ids[i]
+        page_name = page_names[i]
+        current_title = page_name
+
+        print(query_as_text)
+
+        if last_title != current_title:
+            query = QueryParser("contents", analyzer).parse(page_name)
+            scoreDocs = searcher.search(query, hits_per_query).scoreDocs
+            IndexFiles([ searcher.doc(d.doc) for d in scoreDocs ], "./tempindex", reindex=True)
+            last_title = current_title
+
+        directory2 = SimpleFSDirectory(Paths.get("./tempindex"))
+        searcher2 = IndexSearcher(DirectoryReader.open(directory2))
+
+        query = QueryParser("contents", analyzer).parse(query_as_text)
+        scoreDocs2 = searcher.search(query, hits_per_query).scoreDocs
+
+        finalScoreDocs = interpolate_rankings( [scoreDocs, scoreDocs2], [1, 0] )
+        print(len(scoreDocs))
+        runfile_writer(finalScoreDocs, searcher, output_file, query_as_id)
+
+
+
+def interpolate_rankings(rankings, weights):
+        '''
+            This function takes N rankings and returns an intpolated ranking with
+            weights from the weight list of length N
+        '''
+
+        docs = {}
+        for r in range(len(rankings)):
+            rank = 1
+            for doc in rankings[r]:
+                if doc.doc in docs:
+                    docs[doc.doc] += weights[r] * (1.0 / rank)
+                else:
+                    docs[doc.doc] = weights[r] * (1.0 / rank)
+                rank += 1
+
+        docs = [ ScoreDoc(k, v) for k, v in docs.iteritems() ]
+        docs = sorted( docs, key=lambda x: -x.score )
+        return docs
+
+
 
 def runfile_writer(scoreDocs, searcher, output_file, query_as_id):
     rank = 1
     if len(scoreDocs)!=0:
         for scoreDoc in scoreDocs:
             doc = searcher.doc(scoreDoc.doc)
-            print ('id:', doc.get("paraId"))
             search_result_query = ' '.join([query_as_id, str(0),
                                             doc.get("paraId"),
                                             str(rank),
@@ -139,6 +198,18 @@ def search_engine_2(queries, hits, k, facet):
     searcher = IndexSearcher(DirectoryReader.open(directory))
     analyzer = StandardAnalyzer()
     run2(searcher, analyzer, queries, hits, run_file, k, facet)
+    del searcher
+    run_file.close()
+
+def search_engine_3(queries, hits):
+    run_file = codecs.open("runfile", "w", "utf-8")
+    # lucene.initVM(vmargs=['-Djava.awt.headless=true'])
+    print ('lucene', lucene.VERSION)
+    base_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
+    directory = SimpleFSDirectory(Paths.get(os.path.join(base_dir, INDEX_DIR)))
+    searcher = IndexSearcher(DirectoryReader.open(directory))
+    analyzer = StandardAnalyzer()
+    run3(searcher, analyzer, queries, hits, run_file)
     del searcher
     run_file.close()
 
