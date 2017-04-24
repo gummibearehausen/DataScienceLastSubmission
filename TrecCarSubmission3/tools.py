@@ -5,6 +5,7 @@
 import subprocess
 import os
 from platform import architecture, system
+from pprint import pprint
 class Annotator:
 
 	def getSennaTagBatch(self,sentences):
@@ -62,6 +63,8 @@ class Annotator:
 		senna_stdout = p.communicate(input=input_data)[0]
 		os.chdir(cwd)
 		return senna_stdout
+
+
 	def getDependency(self,parse):
 		package_directory = os.path.dirname(os.path.abspath(__file__))
 		cwd=os.getcwd()
@@ -74,6 +77,8 @@ class Annotator:
 		stanford_out=p.stdout.read()
 		os.chdir(cwd)
 		return stanford_out.strip()
+
+
 	def getBatchAnnotations(self,sentences,dep_parse=False):
 		annotations=[]	
 		batch_senna_tags=self.getSennaTagBatch(sentences)
@@ -101,6 +106,7 @@ class Annotator:
 		verb=[]
 		srls=[]
 		syn=[]
+		pprint(senna_tags)
 		for senna_tag in senna_tags:
 			senna_tag=senna_tag.split("\t")
 			words+=[senna_tag[0].strip()]
@@ -186,7 +192,9 @@ class Annotator:
 		verb=[]
 		srls=[]
 		syn=[]
+
 		for senna_tag in senna_tags[0:-2]:
+			# pprint(senna_tags[0:-2])
 
 			senna_tag=senna_tag.split("\t")
 			words+=[senna_tag[0].strip()]
@@ -260,10 +268,6 @@ class Annotator:
 		if(dep_parse):
 			annotations['dep_parse']=self.getDependency(annotations['syntax_tree'])
 		return annotations
-def test():			
-	annotator=Annotator()
-	print annotator.getBatchAnnotations(["He killed the man with a knife and murdered him with a dagger.","He is a good boy."],dep_parse=True)
-	print annotator.getAnnotations("Republican candidate George Bush was great.",dep_parse=True)['dep_parse']
-	print annotator.getAnnotations("Republican candidate George Bush was great.",dep_parse=True)['chunk']
+
 if __name__ == "__main__":
-	test()
+	pass

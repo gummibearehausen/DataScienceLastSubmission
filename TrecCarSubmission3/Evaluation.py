@@ -37,6 +37,9 @@ def eval_result(qrel_file_name):
     return_result = query_rank_list(run_file_name,qrel_file_name)
     true_para_num_per_query_list = return_result[0]
     ranklist_per_query_list = return_result[1]
+    if len(ranklist_per_query_list)>1000:
+        ranklist_per_query_list=ranklist_per_query_list[:1000]
+
     num_of_query = len(true_para_num_per_query_list)
     print("number of queries in the runfile is: " + str(num_of_query))
     map_total = []
@@ -49,8 +52,11 @@ def eval_result(qrel_file_name):
         rel_indices = rank_list.nonzero()
 
 
+
         if len(rel_indices[0]) != 0:
-            map = np.sum([1.0 / (i + 1) for i in rel_indices]) / true_para_num
+
+            map = np.sum([1.0*(list(rel_indices[0]).index(i)+1) / (float(i) + 1) for i in rel_indices[0]]) / float(true_para_num)
+            print("2", rel_indices,map)
             prec_at_5 = np.sum(rank_list[:5]) / 5.0
             prec_at_R = np.sum(rank_list[:true_para_num]) / float(true_para_num)
             mrr = 1.0 /(rel_indices[0][0] + 1)
@@ -64,14 +70,10 @@ def eval_result(qrel_file_name):
     precision_average_queries = np.sum(prec_at_5_total) / float(num_of_query)
     precision_at_r_average_queries = np.sum(prec_at_r_total) / float(num_of_query)
     mrr_average_queries =np.sum(mrr_total)/float(num_of_query)
-    # map_ave = np.sum(map_total) / 70
-    # precision_average_queries = np.sum(prec_at_5_total) / 70
-    # precision_at_r_average_queries = np.sum(prec_at_r_total) / 70
-    # mrr_average_queries = np.sum(mrr_total) / 70
     eval = [map_ave,
-                   precision_average_queries,
-                   precision_at_r_average_queries,
-                   mrr_average_queries]
+            precision_average_queries,
+            precision_at_r_average_queries,
+            mrr_average_queries]
     s = ""
     s+="MAP: " + str(eval[0])+"\n"
     s+="P@5: " + str(eval[1])+"\n"

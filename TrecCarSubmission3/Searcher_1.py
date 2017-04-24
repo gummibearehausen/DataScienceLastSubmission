@@ -6,6 +6,7 @@ INDEX_DIR = "BaseIndexFolder"
 import sys, os, lucene
 import codecs
 import re
+from Parsing import tag_annotator
 from java.nio.file import Paths
 from org.apache.lucene.analysis.standard import StandardAnalyzer
 from org.apache.lucene.index import DirectoryReader
@@ -96,6 +97,7 @@ def run2(searcher, analyzer, queries, hits_per_query, output_file, k, facet):
 
         runfile_writer(scoreDocs, searcher, output_file, query_as_id)
 
+
 def run3(searcher, analyzer, queries, hits_per_query, output_file):
     #queries = [ [query_text],[query_id]]
     queries_text = queries[0]
@@ -130,6 +132,30 @@ def run3(searcher, analyzer, queries, hits_per_query, output_file):
         print(len(scoreDocs))
         runfile_writer(finalScoreDocs, searcher, output_file, query_as_id)
 
+
+def run4(searcher, analyzer, queries, hits_per_query, output_file):
+    from tools import Annotator
+    annotator = Annotator()
+    queries_text = queries[0]
+    queries_ids = queries[1]
+
+    if len(queries_text)!= len(queries_ids):
+        print("Query errors")
+        exit()
+    for i in range(len(queries_text)):
+        query_as_text = queries_text[i]
+        query_annotation = annotator.getAnnotations(query_as_text)
+        named_entities = tag_annotator(query_annotation, "ner")
+
+        query_as_id = queries_ids[i]
+        if len(named_entities)!=0:
+            query_as_text+=" "
+            query_as_text+=" ".join(named_entities)
+
+        query = QueryParser("contents", analyzer).parse(query_as_text)
+        scoreDocs = searcher.search(query, hits_per_query).scoreDocs
+        print ("%s total matching documents." % len(scoreDocs))
+        runfile_writer(scoreDocs, searcher, output_file, query_as_id)
 
 
 def interpolate_rankings(rankings, weights):
@@ -212,6 +238,19 @@ def search_engine_3(queries, hits):
     run3(searcher, analyzer, queries, hits, run_file)
     del searcher
     run_file.close()
+
+def search_engine_4(queries, hits):
+    run_file = codecs.open("runfile", "w", "utf-8")
+    # lucene.initVM(vmargs=['-Djava.awt.headless=true'])
+    print('lucene', lucene.VERSION)
+    base_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
+    directory = SimpleFSDirectory(Paths.get(os.path.join(base_dir, INDEX_DIR)))
+    searcher = IndexSearcher(DirectoryReader.open(directory))
+    analyzer = StandardAnalyzer()
+    run4(searcher, analyzer, queries, hits, run_file)
+    del searcher
+    run_file.close()
+
 
 def search_engine_general():
     # lucene.initVM(vmargs=['-Djava.awt.headless=true'])
