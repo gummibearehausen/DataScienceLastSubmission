@@ -13,13 +13,16 @@ numpy
 # arg[4]: 
           1->baseline model tfidf
           2->top k pseudeo feedback as query model
+                    arg[5]=top k docs from the pseudo search result are selected
+                    arg[6] document facet choice from pseudo feedback, it can be "entities", "content"
           4-> give more weights to the entities in the query
           3-> Title Query Integration
           5-> arguments A0 and A1 from top-k articles from the pseudo search  result as query expansion
+                    arg[5]=top k docs from the pseudo search result are selected
           6-> Word2Vec Query Expansion
           7-> Word2Vec Reranking
           
-# arg[5]=top k docs from the pseudo search result are selected
+
         
 paras are indexed in the folder 'BaseIndexFolder'
 
