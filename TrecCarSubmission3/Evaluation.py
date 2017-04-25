@@ -32,8 +32,8 @@ def read_qrel_file(file_name):
     return query_truth
 
 
-def eval_result(qrel_file_name):
-    run_file_name = "runfile"
+def eval_result(qrel_file_name, run_file_name ):
+
     return_result = query_rank_list(run_file_name,qrel_file_name)
     true_para_num_per_query_list = return_result[0]
     ranklist_per_query_list = return_result[1]

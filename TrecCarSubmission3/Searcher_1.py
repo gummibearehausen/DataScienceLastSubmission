@@ -14,7 +14,7 @@ from org.apache.lucene.queryparser.classic import QueryParser
 from org.apache.lucene.store import SimpleFSDirectory
 from org.apache.lucene.search import IndexSearcher, ScoreDoc
 
-import word2vec
+#import word2vec
 
 
 from Indexer_1 import IndexFiles
@@ -134,13 +134,17 @@ def run5(searcher, analyzer, queries, hits_per_query, output_file, k):
         top_k = int(k)
         pseudo_feedback = top_k_pseudo_feedback(scoreDocs, top_k, "contents", searcher)
 
+
+
+
+
         def srlannotation(article_from_pseudo_result):
             try:
                 srl_anno=annotator.getAnnotations(article_from_pseudo_result)
                 return srl_anno
             except:
                 return None
-        args_top_k_pseudo = [ tag_annotator(srlannotation(ps),"srl")
+        args_top_k_pseudo = [ tag_annotator(srlannotation(ps.split(".")[0]),"srl")
                               for ps in pseudo_feedback]
         args_as_text = ""
         if len(args_top_k_pseudo)==1:
@@ -380,7 +384,7 @@ def runfile_writer(scoreDocs, searcher, output_file, query_as_id):
 
 
 def search_engine_1(queries, hits):
-    run_file = codecs.open("runfile", "w", "utf-8")
+    run_file = codecs.open("runfile1", "w", "utf-8")
     # lucene.initVM(vmargs=['-Djava.awt.headless=true'])
     print ('lucene', lucene.VERSION)
     base_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
@@ -393,7 +397,7 @@ def search_engine_1(queries, hits):
 
 
 def search_engine_2(queries, hits, k, facet):
-    run_file = codecs.open("runfile", "w", "utf-8")
+    run_file = codecs.open("runfile2", "w", "utf-8")
     # lucene.initVM(vmargs=['-Djava.awt.headless=true'])
     print ('lucene', lucene.VERSION)
     base_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
@@ -406,7 +410,7 @@ def search_engine_2(queries, hits, k, facet):
 
 
 def search_engine_5(queries, hits, k):
-    run_file = codecs.open("runfile", "w", "utf-8")
+    run_file = codecs.open("runfile5", "w", "utf-8")
     # lucene.initVM(vmargs=['-Djava.awt.headless=true'])
     print ('lucene', lucene.VERSION)
     base_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
@@ -419,7 +423,7 @@ def search_engine_5(queries, hits, k):
 
 
 def search_engine_3(queries, hits):
-    run_file = codecs.open("runfile", "w", "utf-8")
+    run_file = codecs.open("runfile3", "w", "utf-8")
     # lucene.initVM(vmargs=['-Djava.awt.headless=true'])
     print ('lucene', lucene.VERSION)
     base_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
@@ -432,7 +436,7 @@ def search_engine_3(queries, hits):
 
 
 def search_engine_4(queries, hits):
-    run_file = codecs.open("runfile", "w", "utf-8")
+    run_file = codecs.open("runfile4", "w", "utf-8")
     # lucene.initVM(vmargs=['-Djava.awt.headless=true'])
     print('lucene', lucene.VERSION)
     base_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
@@ -446,7 +450,7 @@ def search_engine_4(queries, hits):
 
 
 def search_engine_6(queries, hits, w2v_model):
-    run_file = codecs.open("runfile", "w", "utf-8")
+    run_file = codecs.open("runfile6", "w", "utf-8")
     # lucene.initVM(vmargs=['-Djava.awt.headless=true'])
     print ('lucene', lucene.VERSION)
     base_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
@@ -458,7 +462,7 @@ def search_engine_6(queries, hits, w2v_model):
     run_file.close()
 
 def search_engine_7(queries, hits, w2v_model):
-    run_file = codecs.open("runfile", "w", "utf-8")
+    run_file = codecs.open("runfile7", "w", "utf-8")
     # lucene.initVM(vmargs=['-Djava.awt.headless=true'])
     print ('lucene', lucene.VERSION)
     base_dir = os.path.dirname(os.path.abspath(sys.argv[0]))

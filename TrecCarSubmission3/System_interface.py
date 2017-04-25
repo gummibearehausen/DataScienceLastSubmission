@@ -26,7 +26,7 @@ os.path.join(base_dir, INDEX_DIR)
 
 
 
-# indexParas = IndexFiles(sys.argv[1],os.path.join(base_dir, INDEX_DIR))
+#indexParas = IndexFiles(sys.argv[1],os.path.join(base_dir, INDEX_DIR))
 
 queries=read_outline(sys.argv[2])
 hits_per_query = 200
@@ -34,35 +34,36 @@ hits_per_query = 200
 model = int(sys.argv[4])
 if model ==1:
     search_engine_1(queries, hits_per_query)
-    eval_result(sys.argv[3])
+	#time.sleep(1)
+    eval_result(sys.argv[3],"runfile1")
 
 elif model == 2:
     k = sys.argv[5]
     facet = sys.argv[6]
     search_engine_2(queries, hits_per_query, k, facet)
-    eval_result(sys.argv[3])
+    eval_result(sys.argv[3],"runfile2")
 
 elif model == 3:
     search_engine_3(queries, hits_per_query)
-    eval_result(sys.argv[3])
+    eval_result(sys.argv[3], "runfile3")
 
 
 elif model == 4:
     search_engine_4(queries, hits_per_query)
-    time.sleep(3)
-    eval_result(sys.argv[3])
+    time.sleep(10)
+    eval_result(sys.argv[3],"runfile4")
 
 
 
 elif model == 5:
     search_engine_5(queries, hits_per_query, int(sys.argv[5]))
-    eval_result(sys.argv[3])
+    eval_result(sys.argv[3],"runfile5")
 
 elif model == 6:
     search_engine_6(queries, hits_per_query, sys.argv[5])
-    eval_result(sys.argv[3])
+    eval_result(sys.argv[3],"runfile6")
 
 elif model == 7:
     search_engine_7(queries, hits_per_query, sys.argv[5])
-    eval_result(sys.argv[3])
+    eval_result(sys.argv[3],"runfile7")
 
