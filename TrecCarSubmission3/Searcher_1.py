@@ -164,13 +164,17 @@ def run3(searcher, analyzer, queries, hits_per_query, output_file):
         print("Query errors")
         exit()
     last_title = None
+    queryCount = float(len(queries_text))
     for i in range(len(queries_text)):
         query_as_text = queries_text[i]
         query_as_id = queries_ids[i]
         page_name = page_names[i]
         current_title = page_name
 
- 
+        sys.stdout.write("\r")
+        sys.stdout.write("Progress: %f%%  Count: %d" % ( (float(i) / queryCount)*100 , i))
+        sys.stdout.flush()
+
         if last_title != current_title:
             query = QueryParser("contents", analyzer).parse(page_name)
             scoreDocs = searcher.search(query, hits_per_query).scoreDocs
@@ -449,7 +453,7 @@ def search_engine_6(queries, hits, w2v_model):
     directory = SimpleFSDirectory(Paths.get(os.path.join(base_dir, INDEX_DIR)))
     searcher = IndexSearcher(DirectoryReader.open(directory))
     analyzer = StandardAnalyzer()
-    run5(searcher, analyzer, queries, hits, run_file, w2v_model)
+    run6(searcher, analyzer, queries, hits, run_file, w2v_model)
     del searcher
     run_file.close()
 
@@ -461,7 +465,7 @@ def search_engine_7(queries, hits, w2v_model):
     directory = SimpleFSDirectory(Paths.get(os.path.join(base_dir, INDEX_DIR)))
     searcher = IndexSearcher(DirectoryReader.open(directory))
     analyzer = StandardAnalyzer()
-    run6(searcher, analyzer, queries, hits, run_file, w2v_model)
+    run7(searcher, analyzer, queries, hits, run_file, w2v_model)
     del searcher
     run_file.close()
 
