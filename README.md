@@ -7,14 +7,14 @@ numpy
 ## python [paragraphs] [outline] [hierarchical qrel] [model_indictor]
 
 # detailed information about the arguments:
-## arg[1]=paragraphs
-## arg[2]=outline
-## arg[3]=hirarchical_qrel
-## arg[4]: 1->baseline model tfidf
-        2->top k pseudeo feedback as query model
-        4-> give more weights to the entities in the query
-        5->arguments A0 and A1 from top-k articles from the pseudo search  result as query expansion
-            arg[5]=top k docs from the pseudo search result are selected
+# arg[1]=paragraphs
+# arg[2]=outline
+# arg[3]=hirarchical_qrel
+# arg[4]: ## 1->baseline model tfidf
+          ## 2->top k pseudeo feedback as query model
+        ## 4-> give more weights to the entities in the query
+        ## 5->arguments A0 and A1 from top-k articles from the pseudo search  result as query expansion
+# arg[5]=top k docs from the pseudo search result are selected
         
 paras are indexed in the folder 'BaseIndexFolder'
 
