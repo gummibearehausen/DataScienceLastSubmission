@@ -3,14 +3,14 @@ pylucene 6.5.0
 python 2.7 
 numpy
 
-when running the file:
-python [paragraphs] [outline] [hierarchical qrel] [model_indictor]
+# when running the file:
+## python [paragraphs] [outline] [hierarchical qrel] [model_indictor]
 
-detailed information about the arguments:
-arg[1]=paragraphs
-arg[2]=outline
-arg[3]=hirarchical_qrel
-arg[4]: 1->baseline model tfidf
+# detailed information about the arguments:
+## arg[1]=paragraphs
+## arg[2]=outline
+## arg[3]=hirarchical_qrel
+## arg[4]: 1->baseline model tfidf
         2->top k pseudeo feedback as query model
         4-> give more weights to the entities in the query
         5->arguments A0 and A1 from top-k articles from the pseudo search  result as query expansion
