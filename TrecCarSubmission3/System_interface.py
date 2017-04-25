@@ -26,7 +26,7 @@ os.path.join(base_dir, INDEX_DIR)
 
 
 
-#indexParas = IndexFiles(sys.argv[1],os.path.join(base_dir, INDEX_DIR))
+indexParas = IndexFiles(sys.argv[1],os.path.join(base_dir, INDEX_DIR))
 
 queries=read_outline(sys.argv[2])
 hits_per_query = 200
