@@ -5,7 +5,7 @@ import numpy as np
 
 def query_rank_list(file_name_1, file_name_2):
     query_truth_set = read_qrel_file(file_name_2)
-    print("number of queries in the qrel is: " + str(len(query_truth_set.keys())))
+    #print("number of queries in the qrel is: " + str(len(query_truth_set.keys())))
     query_ranklist = defaultdict(list)
     with codecs.open(file_name_1) as runfile:
         for line in runfile:
@@ -40,7 +40,7 @@ def eval_result(qrel_file_name):
 
 
     num_of_query = len(true_para_num_per_query_list)
-    print("number of queries in the runfile is: " + str(num_of_query))
+    #print("number of queries in the runfile is: " + str(num_of_query))
     map_total = []
     prec_at_r_total = []
     prec_at_5_total = []
