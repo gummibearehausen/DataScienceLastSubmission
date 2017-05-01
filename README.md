@@ -3,6 +3,10 @@ pylucene 6.5.0
 python 2.7
 numpy
 
+clone the repo
+cd TrecCarSubmission3/
+
+
 # when running the file:
 ## python System_interface.py [paragraphs] [outline] [hierarchical qrel] [model_indictor]
 
