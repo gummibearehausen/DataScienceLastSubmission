@@ -4,7 +4,7 @@ python 2.7
 numpy
 
 # when running the file:
-## python [paragraphs] [outline] [hierarchical qrel] [model_indictor]
+## python System_interface.py [paragraphs] [outline] [hierarchical qrel] [model_indictor]
 
 # detailed information about the arguments:
 # arg[1]=paragraphs
