@@ -18,7 +18,7 @@ cd TrecCarSubmission3/
           1->baseline model tfidf
           2->top k pseudeo feedback as query model
                     arg[5]=top k docs from the pseudo search result are selected
-                    arg[6] document facet choice from pseudo feedback, it can be "entities", "content"
+                    arg[6] document facet choice from pseudo feedback, it can be "entities", "contents"
           4-> give more weights to the entities in the query
           3-> Title Query Integration
           5-> arguments A0 and A1 from top-k articles from the pseudo search  result as query expansion
